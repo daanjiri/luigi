@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { supabase } from "../lib/supabase";
-import { Button, Input } from "@rneui/themed";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Text } from "../components/ui/text";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -39,9 +41,7 @@ export default function Auth() {
     <View style={styles.container}>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
-          label="Email"
-          leftIcon={{ type: "font-awesome", name: "envelope" }}
-          onChangeText={(text) => setEmail(text)}
+          onChangeText={(text: string) => setEmail(text)}
           value={email}
           placeholder="email@address.com"
           autoCapitalize={"none"}
@@ -49,9 +49,7 @@ export default function Auth() {
       </View>
       <View style={styles.verticallySpaced}>
         <Input
-          label="Password"
-          leftIcon={{ type: "font-awesome", name: "lock" }}
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={(text: string) => setPassword(text)}
           value={password}
           secureTextEntry={true}
           placeholder="Password"
@@ -59,18 +57,14 @@ export default function Auth() {
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button
-          title="Sign in"
-          disabled={loading}
-          onPress={() => signInWithEmail()}
-        />
+        <Button disabled={loading} onPress={() => signInWithEmail()}>
+          <Text>Sign in</Text>
+        </Button>
       </View>
       <View style={styles.verticallySpaced}>
-        <Button
-          title="Sign up"
-          disabled={loading}
-          onPress={() => signUpWithEmail()}
-        />
+        <Button disabled={loading} onPress={() => signUpWithEmail()}>
+          <Text>Sign up</Text>
+        </Button>
       </View>
     </View>
   );
