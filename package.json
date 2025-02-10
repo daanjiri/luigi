@@ -25,7 +25,6 @@
     "@rn-primitives/types": "~1.1.0",
     "@rneui/themed": "^4.0.0-rc.8",
     "@supabase/supabase-js": "^2.48.1",
-    "@tamagui/lucide-icons": "^1.124.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "expo": "^52.0.25",
@@ -49,7 +48,6 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "3.3.5",
     "tailwindcss-animate": "^1.0.7",
-    "tamagui": "^1.124.4",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
