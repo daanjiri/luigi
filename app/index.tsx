@@ -25,5 +25,5 @@ export default function App() {
   //   return <Auth />;
   // }
 
-  return <Redirect href="/home" />;
+  return <Redirect href="/linechart" />;
 }

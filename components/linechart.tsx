@@ -27,7 +27,7 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
   const chartWidth = width ?? containerWidth;
   const chartHeight = height ?? screenHeight / 3;
 
-  const margin = { top: 20, right: 10, bottom: 20, left: 20 };
+  const margin = { top: 20, right: 10, bottom: 20, left: 30 };
   const innerWidth = chartWidth - margin.left - margin.right;
   const innerHeight = chartHeight - margin.top - margin.bottom;
 
@@ -100,7 +100,7 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
               key={i}
               cx={xScale(i)}
               cy={yScale(d)}
-              r={8}
+              r={6}
               fill="#2563EB"
             />
           ))}
@@ -135,13 +135,13 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
           })}
 
           {/* X-axis ticks: labeled by index */}
-          {data.map((_, i) => {
+          {xScale.ticks(10).map((tickValue, index) => {
+            const i = Math.round(tickValue);
             const xCoord = xScale(i);
-            const label = xLabels[i] !== undefined ? xLabels[i] : i.toString();
+            const label = xLabels[i] ?? i.toString();
 
             return (
-              <React.Fragment key={i}>
-                {/* Small line below the chart */}
+              <React.Fragment key={`tick-${index}-${label}`}>
                 <Line
                   x1={xCoord}
                   x2={xCoord}
@@ -150,7 +150,6 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
                   stroke="gray"
                   strokeWidth={1}
                 />
-                {/* Tick label - show date or index */}
                 <SvgText
                   x={xCoord}
                   y={innerHeight + 18}

@@ -71,6 +71,13 @@ export default function RootLayout() {
             headerRight: () => <ThemeToggle />,
           }}
         />
+        <Stack.Screen
+          name="linechart/index"
+          options={{
+            title: "Line Chart",
+            headerRight: () => <ThemeToggle />,
+          }}
+        />
       </Stack>
       <PortalHost />
     </ThemeProvider>
