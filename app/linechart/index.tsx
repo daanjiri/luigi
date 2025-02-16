@@ -96,6 +96,155 @@ const LineChartScreen = () => {
         setTickLabels(weeklyTickLabels);
         break;
       }
+      case "LY": {
+        const rawData = mockData.slice(-365); // Get last 365 days
+        const monthlyData: { [key: string]: DailyPain[] } = {};
+
+        // Group data by month
+        rawData.forEach((item) => {
+          const date = new Date(item.date);
+          const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+          if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = [];
+          }
+          monthlyData[monthKey].push(item);
+        });
+
+        // Process monthly groups
+        const averagedData: DailyPain[] = [];
+        const monthlyTickLabels: string[] = [];
+
+        // Get sorted month keys
+        const sortedMonths = Object.keys(monthlyData).sort();
+
+        sortedMonths.forEach((monthKey) => {
+          const monthEntries = monthlyData[monthKey];
+          const average = Number(
+            (
+              monthEntries.reduce((sum, item) => sum + item.level, 0) /
+              monthEntries.length
+            ).toFixed(1)
+          );
+
+          // Use first entry's date as representative for the month
+          const representativeDate = new Date(monthEntries[0].date);
+          averagedData.push({
+            date: representativeDate,
+            level: average,
+          });
+
+          // Format month name (e.g., "Jan", "Feb")
+          monthlyTickLabels.push(
+            new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+              representativeDate
+            )
+          );
+        });
+
+        setWeeklyPainData(averagedData);
+        setTickLabels(monthlyTickLabels);
+        break;
+      }
+      case "M": {
+        const monthlyData: { [key: string]: DailyPain[] } = {};
+
+        // Group all data by month
+        mockData.forEach((item) => {
+          const date = new Date(item.date);
+          const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+          if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = [];
+          }
+          monthlyData[monthKey].push(item);
+        });
+
+        // Process monthly groups
+        const averagedData: DailyPain[] = [];
+        const monthlyTickLabels: string[] = [];
+
+        // Get sorted month keys
+        const sortedMonths = Object.keys(monthlyData).sort();
+
+        // Calculate label interval based on total months (show ~10 labels)
+        const totalMonths = sortedMonths.length;
+        const labelInterval = Math.ceil(totalMonths / 10);
+
+        sortedMonths.forEach((monthKey, index) => {
+          const monthEntries = monthlyData[monthKey];
+          const average = Number(
+            (
+              monthEntries.reduce((sum, item) => sum + item.level, 0) /
+              monthEntries.length
+            ).toFixed(1)
+          );
+
+          const representativeDate = new Date(monthEntries[0].date);
+          averagedData.push({
+            date: representativeDate,
+            level: average,
+          });
+
+          // Show label only at intervals, with first and last always shown
+          if (
+            index % labelInterval === 0 ||
+            index === 0 ||
+            index === sortedMonths.length - 1
+          ) {
+            monthlyTickLabels.push(
+              new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+                representativeDate
+              )
+            );
+          } else {
+            monthlyTickLabels.push("");
+          }
+        });
+
+        setWeeklyPainData(averagedData);
+        setTickLabels(monthlyTickLabels);
+        break;
+      }
+      case "Y": {
+        const yearlyData: { [key: string]: DailyPain[] } = {};
+
+        // Group all data by year
+        mockData.forEach((item) => {
+          const date = new Date(item.date);
+          const yearKey = date.getFullYear().toString();
+          if (!yearlyData[yearKey]) {
+            yearlyData[yearKey] = [];
+          }
+          yearlyData[yearKey].push(item);
+        });
+
+        // Process yearly groups
+        const averagedData: DailyPain[] = [];
+        const yearlyTickLabels: string[] = [];
+
+        // Get sorted years
+        const sortedYears = Object.keys(yearlyData).sort();
+
+        sortedYears.forEach((yearKey) => {
+          const yearEntries = yearlyData[yearKey];
+          const average = Number(
+            (
+              yearEntries.reduce((sum, item) => sum + item.level, 0) /
+              yearEntries.length
+            ).toFixed(1)
+          );
+
+          averagedData.push({
+            date: yearEntries[0].date, // Use first entry's date as representative
+            level: average,
+          });
+
+          yearlyTickLabels.push(yearKey);
+        });
+
+        setWeeklyPainData(averagedData);
+        setTickLabels(yearlyTickLabels);
+        break;
+      }
       default:
         setWeeklyPainData(mockData);
     }

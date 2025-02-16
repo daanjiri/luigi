@@ -27,7 +27,7 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
   const chartWidth = width ?? containerWidth;
   const chartHeight = height ?? screenHeight / 3;
 
-  const margin = { top: 20, right: 10, bottom: 20, left: 30 };
+  const margin = { top: 20, right: 20, bottom: 20, left: 30 };
   const innerWidth = chartWidth - margin.left - margin.right;
   const innerHeight = chartHeight - margin.top - margin.bottom;
 
@@ -36,7 +36,20 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
     .domain([0, data.length - 1])
     .range([0, innerWidth]);
 
-  const yScale = d3.scaleLinear().domain([0, 10]).range([innerHeight, 0]);
+  const dataMin = Math.min(...data);
+  const dataMax = Math.max(...data);
+
+  // Calculate dynamic domain with buffer
+  let yMin = Math.floor(Math.max(dataMin - 1, 0));
+  let yMax = Math.ceil(Math.min(dataMax + 1, 10));
+
+  // If all values are same, show range 0-2
+  // if (dataMin === dataMax) {
+  //   yMin = 0;
+  //   yMax = 2;
+  // }
+
+  const yScale = d3.scaleLinear().domain([yMin, yMax]).range([innerHeight, 0]);
 
   const lineGenerator = d3
     .line<number>()
@@ -55,6 +68,60 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
     .curve(d3.curveNatural);
 
   const areaPath = areaGenerator(data);
+
+  const calculateThreshold = (values: number[]) => {
+    if (values.length < 2) return Infinity; // Need at least 2 points
+
+    // Calculate mean
+    const mean = values.reduce((sum, d) => sum + d, 0) / values.length;
+
+    // Calculate standard deviation
+    const squaredDiffs = values.map((d) => Math.pow(d - mean, 2));
+    const variance =
+      squaredDiffs.reduce((sum, d) => sum + d, 0) / values.length;
+    const stdDev = Math.sqrt(variance);
+
+    // Set threshold at mean + 1 standard deviation
+    return mean + stdDev;
+  };
+
+  const highPainThreshold = calculateThreshold(data);
+  const hasSignificantHighPoints = data.some((d) => d > highPainThreshold);
+
+  // Add this function to calculate trend line points
+  const calculateTrendLine = (data: number[]) => {
+    if (data.length < 2) return []; // Need at least 2 points for a trend
+
+    const n = data.length;
+    let sumX = 0,
+      sumY = 0,
+      sumXY = 0,
+      sumXX = 0;
+
+    data.forEach((y, x) => {
+      sumX += x;
+      sumY += y;
+      sumXY += x * y;
+      sumXX += x * x;
+    });
+
+    const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+
+    return [
+      { x: 0, y: intercept },
+      { x: n - 1, y: slope * (n - 1) + intercept },
+    ];
+  };
+
+  // Add this before the return statement
+  const trendLinePoints = calculateTrendLine(data);
+  const trendLinePath = d3
+    .line<{ x: number; y: number }>()
+    .x((d) => xScale(d.x))
+    .y((d) => yScale(d.y))(trendLinePoints);
+
+  const yTicks = d3.range(yMin, yMax + 1, 1); // Creates an array stepping by 1
 
   return (
     <View
@@ -94,23 +161,28 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
             />
           )}
 
-          {/* Blue dots for data points */}
-          {data.map((d, i) => (
-            <Circle
-              key={i}
-              cx={xScale(i)}
-              cy={yScale(d)}
-              r={6}
-              fill="#2563EB"
-            />
-          ))}
+          {/* Show only high pain points */}
+          {data
+            .map((d, originalIndex) => ({ d, originalIndex })) // Preserve original index
+            .filter(({ d }) => d > highPainThreshold)
+            .map(({ d, originalIndex }) => (
+              <Circle
+                key={originalIndex}
+                cx={xScale(originalIndex)} // Use original index for positioning
+                cy={yScale(d)}
+                r={6}
+                fill="#FF6B6B"
+                // stroke="#FF6B6B"
+                strokeWidth={2}
+              />
+            ))}
 
           {/* Y-axis ticks */}
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((tick) => {
+          {yTicks.map((tick) => {
             const yCoord = yScale(tick);
             return (
               <React.Fragment key={tick}>
-                {/* Small tick line - adjust x2 as desired for length */}
+                {/* Small tick line */}
                 <Line
                   x1={-5}
                   x2={0}
@@ -119,7 +191,7 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
                   stroke="gray"
                   strokeWidth={1}
                 />
-                {/* Tick label - small font */}
+                {/* Tick label */}
                 <SvgText
                   x={-10}
                   y={yCoord}
@@ -162,6 +234,30 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
               </React.Fragment>
             );
           })}
+
+          {/* Optional: Add a threshold line visualization */}
+          {/* {hasSignificantHighPoints && (
+            <Line
+              x1={0}
+              x2={innerWidth}
+              y1={yScale(highPainThreshold)}
+              y2={yScale(highPainThreshold)}
+              stroke="#EF4444"
+              strokeWidth={1}
+              strokeDasharray="4 4"
+            />
+          )} */}
+
+          {/* Trend Line Path */}
+          {trendLinePath && (
+            <Path
+              d={trendLinePath}
+              fill="none"
+              stroke="#6B7280" // Gray color
+              strokeWidth={2}
+              strokeDasharray="4 2"
+            />
+          )}
         </G>
       </Svg>
     </View>
