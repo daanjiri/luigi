@@ -27,7 +27,7 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
   const chartWidth = width ?? containerWidth;
   const chartHeight = height ?? screenHeight / 3;
 
-  const margin = { top: 20, right: 20, bottom: 20, left: 30 };
+  const margin = { top: 50, right: 20, bottom: 20, left: 30 };
   const innerWidth = chartWidth - margin.left - margin.right;
   const innerHeight = chartHeight - margin.top - margin.bottom;
 
@@ -86,7 +86,6 @@ function LineChart({ data, width, height, xLabels = [] }: LineChartProps) {
   };
 
   const highPainThreshold = calculateThreshold(data);
-  const hasSignificantHighPoints = data.some((d) => d > highPainThreshold);
 
   // Add this function to calculate trend line points
   const calculateTrendLine = (data: number[]) => {

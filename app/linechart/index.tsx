@@ -10,6 +10,8 @@ import {
   differenceInWeeks,
   differenceInDays,
 } from "date-fns";
+import { LineChart as LineChartIcon } from "~/lib/icons/line-chart";
+import { CalendarDays as CalendarDaysIcon } from "~/lib/icons/calendar-days";
 
 // Define a new type for daily pain data
 type DailyPain = {
@@ -25,7 +27,7 @@ const dayLetters = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const LineChartScreen = () => {
   const [weeklyPainData, setWeeklyPainData] = useState<DailyPain[]>(mockData);
   const [tickLabels, setTickLabels] = useState<string[]>([]);
-  const [activeFilter, setActiveFilter] = useState<ActiveFilter>(null);
+  const [activeFilter, setActiveFilter] = useState<ActiveFilter>("7D");
 
   // Separate filter function
   const applyFilter = (filter: ActiveFilter) => {
@@ -257,7 +259,18 @@ const LineChartScreen = () => {
   return (
     <ScrollView>
       {/* Horizontal buttons for filtering by time period */}
-
+      <View className="flex-row gap-2 pr-4 pl-4 justify-between">
+        <LineChartIcon
+          className="text-foreground"
+          size={23}
+          strokeWidth={1.5}
+        />
+        <CalendarDaysIcon
+          className="text-foreground"
+          size={23}
+          strokeWidth={1.5}
+        />
+      </View>
       <LineChart
         data={weeklyPainData.map((item) => item.level)}
         xLabels={tickLabels}

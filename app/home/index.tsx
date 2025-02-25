@@ -12,6 +12,8 @@ import {
 import { Activity } from "~/lib/icons/activity";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { Button } from "~/components/ui/button";
+import { LineChart } from "~/lib/icons/line-chart";
+import { CalendarDays } from "~/lib/icons/calendar-days";
 
 type PainEntry = {
   id: string;
@@ -99,12 +101,6 @@ export default function Home() {
           </Card>
         ))}
       </ScrollView>
-
-      <View className="absolute bottom-4 left-4 right-4 shadow-lg rounded-full">
-        <Button className="w-full rounded-full">
-          <Text className="font-bold text-lg">Add Pain</Text>
-        </Button>
-      </View>
     </View>
   );
 }
