@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, TouchableOpacity } from "react-native";
 import LineChart from "../../components/linechart";
 import { mockData } from "./mockdata";
 import { Button } from "~/components/ui/button";
@@ -12,6 +12,7 @@ import {
 } from "date-fns";
 import { LineChart as LineChartIcon } from "~/lib/icons/line-chart";
 import { CalendarDays as CalendarDaysIcon } from "~/lib/icons/calendar-days";
+import Heatmap from "~/components/heatmap";
 
 // Define a new type for daily pain data
 type DailyPain = {
@@ -21,6 +22,7 @@ type DailyPain = {
 
 // Add this state definition at the top of your component
 type ActiveFilter = "7D" | "LM" | "M" | "Y" | "W" | "LY" | "3M" | null;
+type VisualizationType = "lineChart" | "calendar";
 
 const dayLetters = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
@@ -28,6 +30,8 @@ const LineChartScreen = () => {
   const [weeklyPainData, setWeeklyPainData] = useState<DailyPain[]>(mockData);
   const [tickLabels, setTickLabels] = useState<string[]>([]);
   const [activeFilter, setActiveFilter] = useState<ActiveFilter>("7D");
+  const [activeVisualization, setActiveVisualization] =
+    useState<VisualizationType>("lineChart");
 
   // Separate filter function
   const applyFilter = (filter: ActiveFilter) => {
@@ -256,48 +260,79 @@ const LineChartScreen = () => {
     applyFilter(activeFilter);
   }, [activeFilter]);
 
+  const renderVisualization = () => {
+    if (activeVisualization === "lineChart") {
+      return (
+        <View>
+          <LineChart
+            data={weeklyPainData.map((item) => item.level)}
+            xLabels={tickLabels}
+          />
+          <View className="flex-row gap-2 pr-4 pl-4 justify-between mt-2">
+            <Button variant="ghost" onPress={() => setActiveFilter("Y")}>
+              <Text>Y</Text>
+            </Button>
+            <Button variant="ghost" onPress={() => setActiveFilter("M")}>
+              <Text>M</Text>
+            </Button>
+            {/* <Button variant="ghost" onPress={() => setActiveFilter("W")}>
+          <Text>W</Text>
+        </Button> */}
+            <Button variant="ghost" onPress={() => setActiveFilter("LY")}>
+              <Text>LY</Text>
+            </Button>
+            <Button variant="ghost" onPress={() => setActiveFilter("3M")}>
+              <Text>3M</Text>
+            </Button>
+            <Button variant="ghost" onPress={() => setActiveFilter("LM")}>
+              <Text>LM</Text>
+            </Button>
+            <Button variant="ghost" onPress={() => setActiveFilter("7D")}>
+              <Text>7D</Text>
+            </Button>
+          </View>
+        </View>
+      );
+    } else {
+      return (
+        <View className="h-80 items-center justify-center">
+          <Heatmap />
+        </View>
+      );
+    }
+  };
+
   return (
     <ScrollView>
       {/* Horizontal buttons for filtering by time period */}
-      <View className="flex-row gap-2 pr-4 pl-4 justify-between">
-        <LineChartIcon
-          className="text-foreground"
-          size={23}
-          strokeWidth={1.5}
-        />
-        <CalendarDaysIcon
-          className="text-foreground"
-          size={23}
-          strokeWidth={1.5}
-        />
+      <View className="flex-row gap-2 pr-4 pl-4 justify-between mb-2">
+        <TouchableOpacity
+          onPress={() => setActiveVisualization("lineChart")}
+          className={`p-2 rounded-full ${
+            activeVisualization === "lineChart" ? "bg-muted" : ""
+          }`}
+        >
+          <LineChartIcon
+            className="text-foreground"
+            size={23}
+            strokeWidth={1.5}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setActiveVisualization("calendar")}
+          className={`p-2 rounded-full ${
+            activeVisualization === "calendar" ? "bg-muted" : ""
+          }`}
+        >
+          <CalendarDaysIcon
+            className="text-foreground"
+            size={23}
+            strokeWidth={1.5}
+          />
+        </TouchableOpacity>
       </View>
-      <LineChart
-        data={weeklyPainData.map((item) => item.level)}
-        xLabels={tickLabels}
-      />
-      <View className="flex-row gap-2 pr-4 pl-4 justify-between">
-        <Button variant="ghost" onPress={() => setActiveFilter("Y")}>
-          <Text>Y</Text>
-        </Button>
-        <Button variant="ghost" onPress={() => setActiveFilter("M")}>
-          <Text>M</Text>
-        </Button>
-        {/* <Button variant="ghost" onPress={() => setActiveFilter("W")}>
-          <Text>W</Text>
-        </Button> */}
-        <Button variant="ghost" onPress={() => setActiveFilter("LY")}>
-          <Text>LY</Text>
-        </Button>
-        <Button variant="ghost" onPress={() => setActiveFilter("3M")}>
-          <Text>3M</Text>
-        </Button>
-        <Button variant="ghost" onPress={() => setActiveFilter("LM")}>
-          <Text>LM</Text>
-        </Button>
-        <Button variant="ghost" onPress={() => setActiveFilter("7D")}>
-          <Text>7D</Text>
-        </Button>
-      </View>
+
+      {renderVisualization()}
     </ScrollView>
   );
 };
