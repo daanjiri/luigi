@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
-import LineChart from "../../components/linechart";
-import { mockData } from "./mockdata";
+import LineChart from "../../../components/linechart";
+import { mockData } from "~/lib/mockdata";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import {

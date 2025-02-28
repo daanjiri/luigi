@@ -6,7 +6,7 @@ import {
   Theme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { Stack, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Platform } from "react-native";
@@ -15,6 +15,9 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import { PortalHost } from "@rn-primitives/portal";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { setAndroidNavigationBar } from "~/lib/android-navigation-bar";
+import { Home } from "lucide-react-native";
+import { LineChart } from "lucide-react-native";
+import { User } from "lucide-react-native";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -57,27 +60,7 @@ export default function RootLayout() {
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
       <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            title: "Starter Base",
-            headerRight: () => <ThemeToggle />,
-          }}
-        />
-        <Stack.Screen
-          name="home/index"
-          options={{
-            title: "Home Screen",
-            headerRight: () => <ThemeToggle />,
-          }}
-        />
-        <Stack.Screen
-          name="linechart/index"
-          options={{
-            title: "Line Chart",
-            headerRight: () => <ThemeToggle />,
-          }}
-        />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <PortalHost />
     </ThemeProvider>

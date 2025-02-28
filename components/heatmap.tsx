@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import React from "react";
 import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import Svg, { Circle, Text as SvgText, G } from "react-native-svg";
-import { mockData } from "~/app/linechart/mockdata";
+import { mockData } from "~/lib/mockdata";
 import {
   format,
   startOfMonth,
