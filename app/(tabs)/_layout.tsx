@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, LineChart, User } from "lucide-react-native";
+import { Home, LineChart, User, Plus } from "lucide-react-native";
 import * as React from "react";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { useColorScheme } from "~/lib/useColorScheme";
@@ -20,14 +20,6 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="home/index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
-          headerRight: () => <ThemeToggle />,
-        }}
-      />
-      <Tabs.Screen
         name="charts/index"
         options={{
           title: "Charts",
@@ -37,6 +29,23 @@ export default function TabsLayout() {
           headerRight: () => <ThemeToggle />,
         }}
       />
+
+      <Tabs.Screen
+        name="add/index"
+        options={{
+          title: "Add",
+          tabBarIcon: ({ color, size }) => <Plus color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="home/index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
+          headerRight: () => <ThemeToggle />,
+        }}
+      />
+
       {/* <Tabs.Screen
         name="profile"
         options={{
